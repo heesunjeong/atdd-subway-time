@@ -70,12 +70,11 @@ public class RouteAcceptanceTest extends AbstractAcceptanceTest {
     @DisplayName("지하철역 사이의 실시간 최단시간 경로 조회")
     @Test
     void retrievePathByRealTime() {
-        Long univOfEducationStation = stationHttpTest.createStation(TestConstant.STATION_NAME_12);
         Long expTerminalStation = stationHttpTest.createStation(TestConstant.STATION_NAME_11);
+        Long univOfEducationStation = stationHttpTest.createStation(TestConstant.STATION_NAME_12);
 
         Long thirdLine = lineHttpTest.createLine(TestConstant.LINE_NAME_3);
 
-        lineHttpTest.createEdgeRequest(thirdLine, univOfEducationStation, expTerminalStation, 2);
         lineHttpTest.createEdgeRequest(thirdLine, univOfEducationStation, expTerminalStation, 2);
         lineHttpTest.createEdgeRequest(secondLine, expTerminalStation, gangnamStation, 2);
 

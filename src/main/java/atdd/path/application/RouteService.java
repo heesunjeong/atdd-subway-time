@@ -1,5 +1,6 @@
 package atdd.path.application;
 
+import atdd.path.application.dto.RealTimeRouteResponseView;
 import atdd.path.application.dto.RouteResponseDto;
 import atdd.path.application.dto.StationResponseDto;
 import atdd.path.domain.Graph;
@@ -40,5 +41,10 @@ public class RouteService {
                 .stations(StationResponseDto.listOf(paths))
                 .estimatedTime(graph.getEstimatedTime(startId, endId))
                 .build();
+    }
+
+    public RealTimeRouteResponseView findRealTimePath(Long startId, Long endId) {
+
+        return null;
     }
 }
