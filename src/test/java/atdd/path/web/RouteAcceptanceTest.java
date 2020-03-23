@@ -80,7 +80,7 @@ public class RouteAcceptanceTest extends AbstractAcceptanceTest {
         lineHttpTest.createEdgeRequest(secondLine, expTerminalStation, gangnamStation, 2);
 
 
-        webTestClient.get().uri(ROUTES_URI + "realTime?startId=" + expTerminalStation + "&endId=" + samsungStation)
+        webTestClient.get().uri(ROUTES_URI + "/real-time?startId=" + expTerminalStation + "&endId=" + samsungStation)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().exists("Etag")

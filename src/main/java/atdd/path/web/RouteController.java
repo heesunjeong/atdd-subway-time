@@ -29,4 +29,9 @@ public class RouteController {
         return ResponseEntity.ok()
                 .body(routeService.findShortestTimePath(startId, endId));
     }
+
+    @GetMapping("real-time")
+    public ResponseEntity findRealTimePath(@RequestParam("startId") Long startId, @RequestParam("endId") Long endId) {
+        return ResponseEntity.ok().build();
+    }
 }
