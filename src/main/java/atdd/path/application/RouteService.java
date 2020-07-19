@@ -8,6 +8,7 @@ import atdd.path.domain.Station;
 import atdd.path.repository.LineRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -43,7 +44,9 @@ public class RouteService {
                 .build();
     }
 
-    public RealTimeRouteResponseView findRealTimePath(Long startId, Long endId) {
+    public RealTimeRouteResponseView findRealTimePath(Long startId, Long endId, LocalDateTime departureTime) {
+        Graph graph = new Graph(lineRepository.findAll());
+        List<Station> paths = graph.getShortestTimePathByRealTime(startId, endId);
 
         return null;
     }

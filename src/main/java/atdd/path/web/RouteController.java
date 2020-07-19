@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequestMapping("routes")
 public class RouteController {
@@ -31,7 +33,10 @@ public class RouteController {
     }
 
     @GetMapping("real-time")
-    public ResponseEntity findRealTimePath(@RequestParam("startId") Long startId, @RequestParam("endId") Long endId) {
-        return ResponseEntity.ok().build();
+    public ResponseEntity findRealTimePath(@RequestParam("startId") Long startId,
+                                           @RequestParam("endId") Long endId,
+                                           @RequestParam("departureTime") LocalDateTime departureTime) {
+        routeService.findRealTimePath(startId, endId, departureTime);
+        return ResponseEntity.ok(routeService.findRealTimePath(startId, endId, departureTime));
     }
 }

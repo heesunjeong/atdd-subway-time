@@ -1,5 +1,6 @@
 package atdd.path.application.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,6 +9,7 @@ import java.util.List;
 
 @NoArgsConstructor
 @Getter
+@Builder
 public class RealTimeRouteResponseView {
     private Long startStationId;
     private Long endStationId;

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+
 public class RouteAcceptanceTest extends AbstractAcceptanceTest {
 
     private static final String ROUTES_URI = "/routes";
@@ -78,8 +80,9 @@ public class RouteAcceptanceTest extends AbstractAcceptanceTest {
         lineHttpTest.createEdgeRequest(thirdLine, univOfEducationStation, expTerminalStation, 2);
         lineHttpTest.createEdgeRequest(secondLine, expTerminalStation, gangnamStation, 2);
 
-
-        webTestClient.get().uri(ROUTES_URI + "/real-time?startId=" + expTerminalStation + "&endId=" + samsungStation)
+        LocalDateTime departureTime = LocalDateTime.of(2021, 7, 19, 10, 0);
+        webTestClient.get().uri(ROUTES_URI + "/real-time?startId=" + expTerminalStation + "&endId=" + samsungStation
+                + "&departureTime=" + departureTime)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().exists("Etag")
@@ -89,7 +92,7 @@ public class RouteAcceptanceTest extends AbstractAcceptanceTest {
                 .jsonPath("$.stations.size()").isEqualTo(6)
                 .jsonPath("$.lines.size()").isEqualTo(2)
                 .jsonPath("$.distance").isEqualTo(6)
-                .jsonPath("$.departAt").isEqualTo(6)
-                .jsonPath("$.arriveBy").isEqualTo(6);
+                .jsonPath("$.departAt").isEqualTo(departureTime)
+                .jsonPath("$.arriveBy").isEqualTo(departureTime.plusMinutes(10));
     }
 }
