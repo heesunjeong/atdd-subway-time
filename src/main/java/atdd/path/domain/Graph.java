@@ -2,11 +2,17 @@ package atdd.path.domain;
 
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.alg.shortestpath.KShortestPaths;
 import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.GraphWalk;
 import org.jgrapht.graph.WeightedMultigraph;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Graph {
     private List<Line> lines;
@@ -85,5 +91,47 @@ public class Graph {
                         && it.getTargetStation().getId().equals(edgeTarget))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
+    }
+
+    private Line findLine(Long lineId) {
+        Map<Long, Line> collect = lines.stream()
+                .collect(Collectors.toMap(Line::getId, Function.identity()));
+        return collect.get(lineId);
+    }
+
+    public List<Station> getShortestTimePathByRealTime(Long startId, Long endId) {
+        WeightedMultigraph<Long, DefaultWeightedEdge> graph = makeGraphForTime(lines);
+        KShortestPaths paths = new KShortestPaths(graph, 20);
+        List<GraphWalk<Long, DefaultWeightedEdge>> allPaths = paths.getPaths(startId, endId);
+
+        Map<GraphWalk, LocalDateTime> routeWeights = new HashMap();
+        Set<Edge> edges = new HashSet<>();
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        for (GraphWalk<Long, DefaultWeightedEdge> allPath : allPaths) {
+            LocalDateTime passedTime = currentTime;
+            List<DefaultWeightedEdge> edgeList = allPath.getEdgeList();
+
+            for (DefaultWeightedEdge defaultWeightedEdge : edgeList) {
+                Edge edge = findEdge(graph.getEdgeSource(defaultWeightedEdge), graph.getEdgeTarget(defaultWeightedEdge));
+                edges.add(edge);
+                passedTime = getDepartTime(edge, passedTime);
+            }
+
+            routeWeights.put(allPath, passedTime);
+        }
+
+        GraphWalk key = routeWeights.entrySet().stream().min(Comparator.comparing(Map.Entry::getValue)).get().getKey();
+        return edges.stream().flatMap(it -> Stream.of(it.getSourceStation(), it.getTargetStation())).collect(Collectors.toList());
+    }
+
+    private LocalDateTime getDepartTime(Edge edge, LocalDateTime passedTime) {
+        LocalTime currentTime = passedTime.toLocalTime();
+        Station targetStation = edge.getTargetStation();
+        Line line = edge.getLine();
+
+        return targetStation.getEarliestTime(line, currentTime).isBefore(currentTime)
+                ? passedTime.toLocalDate().plusDays(1).atTime(targetStation.getEarliestTime(line, currentTime))
+                : passedTime.toLocalDate().atTime(targetStation.getEarliestTime(line, currentTime));
     }
 }

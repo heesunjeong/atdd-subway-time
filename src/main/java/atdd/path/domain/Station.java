@@ -84,4 +84,12 @@ public class Station {
                 .mapToObj(it -> line.getStartTime().plusMinutes(it).plusMinutes(elapsedTime))
                 .collect(Collectors.toList());
     }
+
+    public LocalTime getEarliestTime(Line line, LocalTime time) {
+        List<LocalTime> timetable = this.getTimetable(line, true);
+
+        return timetable.stream().filter(it -> it.isAfter(time))
+                .findFirst()
+                .orElseGet(() -> timetable.get(0));
+    }
 }
